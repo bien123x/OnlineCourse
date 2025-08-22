@@ -12,8 +12,8 @@ using OnlineCourse.Data;
 namespace OnlineCourse.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250821065207_init")]
-    partial class init
+    [Migration("20250821172211_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,7 +37,6 @@ namespace OnlineCourse.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsPublished")
@@ -212,6 +211,23 @@ namespace OnlineCourse.Migrations
                     b.HasKey("RoleId");
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            RoleId = 1,
+                            RoleName = "Admin"
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            RoleName = "Teacher"
+                        },
+                        new
+                        {
+                            RoleId = 3,
+                            RoleName = "Student"
+                        });
                 });
 
             modelBuilder.Entity("OnlineCourse.Models.User", b =>
@@ -240,7 +256,7 @@ namespace OnlineCourse.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<string>("PasswordHash")
+                    b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -254,7 +270,13 @@ namespace OnlineCourse.Migrations
 
                     b.HasKey("UserId");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("UserName")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -262,7 +284,7 @@ namespace OnlineCourse.Migrations
             modelBuilder.Entity("OnlineCourse.Models.Course", b =>
                 {
                     b.HasOne("OnlineCourse.Models.User", "Teacher")
-                        .WithMany("CoursesTaught")
+                        .WithMany("Courses")
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -275,7 +297,7 @@ namespace OnlineCourse.Migrations
                     b.HasOne("OnlineCourse.Models.Course", "Course")
                         .WithMany("Enrollments")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("OnlineCourse.Models.User", "User")
@@ -294,7 +316,7 @@ namespace OnlineCourse.Migrations
                     b.HasOne("OnlineCourse.Models.Course", "Course")
                         .WithMany("Lessons")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Course");
@@ -316,7 +338,7 @@ namespace OnlineCourse.Migrations
                     b.HasOne("OnlineCourse.Models.Course", "Course")
                         .WithMany("Payments")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("OnlineCourse.Models.User", "User")
@@ -335,7 +357,7 @@ namespace OnlineCourse.Migrations
                     b.HasOne("OnlineCourse.Models.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Role");
@@ -357,7 +379,7 @@ namespace OnlineCourse.Migrations
 
             modelBuilder.Entity("OnlineCourse.Models.User", b =>
                 {
-                    b.Navigation("CoursesTaught");
+                    b.Navigation("Courses");
 
                     b.Navigation("Enrollments");
 

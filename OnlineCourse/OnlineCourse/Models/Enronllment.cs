@@ -5,7 +5,6 @@ namespace OnlineCourse.Models
 {
     public class Enrollment
     {
-        [Key]
         public int EnrollmentId { get; set; }
 
         public DateTime EnrolledAt { get; set; } = DateTime.UtcNow;
@@ -14,16 +13,11 @@ namespace OnlineCourse.Models
 
         // FK -> User
         public int UserId { get; set; }
-
-        [ForeignKey("UserId")]
-        [InverseProperty("Enrollments")]
-        public User User { get; set; } = null!;
+        public User? User { get; set; } = null;
 
         // FK -> Course
         public int CourseId { get; set; }
+        public Course? Course { get; set; } = null;
 
-        [ForeignKey("CourseId")]
-        [InverseProperty("Enrollments")]
-        public Course Course { get; set; } = null!;
     }
 }

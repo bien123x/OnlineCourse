@@ -10,13 +10,12 @@ namespace OnlineCourse.Models
 {
     public class Course
     {
-        [Key]
         public int CourseId { get; set; }
 
         [Required, MaxLength(200)]
         public string Title { get; set; } = null!;
 
-        public string Description { get; set; } = null!;
+        public string? Description { get; set; } = null;
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
@@ -28,18 +27,10 @@ namespace OnlineCourse.Models
         // FK -> User (Teacher)
         public int TeacherId { get; set; }
 
-        [ForeignKey("TeacherId")]
-        [InverseProperty("CoursesTaught")]
-        public User Teacher { get; set; } = null!;
+        public User? Teacher { get; set; } = null!;
 
-        // Navigation
-        [InverseProperty("Course")]
-        public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
-
-        [InverseProperty("Course")]
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
-
-        [InverseProperty("Course")]
+        public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
         public ICollection<Payment> Payments { get; set; } = new List<Payment>();
     }
 }

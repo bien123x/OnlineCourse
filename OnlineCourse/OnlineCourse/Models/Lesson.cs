@@ -5,7 +5,6 @@ namespace OnlineCourse.Models
 {
     public class Lesson
     {
-        [Key]
         public int LessonId { get; set; }
 
         [Required, MaxLength(200)]
@@ -19,9 +18,6 @@ namespace OnlineCourse.Models
 
         // FK -> Course
         public int CourseId { get; set; }
-
-        [ForeignKey("CourseId")]
-        [InverseProperty("Lessons")]
-        public Course Course { get; set; } = null!;
+        public Course? Course { get; set; } = null!;
     }
 }

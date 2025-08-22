@@ -5,7 +5,6 @@ namespace OnlineCourse.Models
 {
     public class Payment
     {
-        [Key]
         public int PaymentId { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
@@ -21,16 +20,11 @@ namespace OnlineCourse.Models
 
         // FK -> User
         public int UserId { get; set; }
-
-        [ForeignKey("UserId")]
-        [InverseProperty("Payments")]
-        public User User { get; set; } = null!;
+        public User? User { get; set; } = null;
 
         // FK -> Course
         public int CourseId { get; set; }
+        public Course? Course { get; set; } = null;
 
-        [ForeignKey("CourseId")]
-        [InverseProperty("Payments")]
-        public Course Course { get; set; } = null!;
     }
 }
