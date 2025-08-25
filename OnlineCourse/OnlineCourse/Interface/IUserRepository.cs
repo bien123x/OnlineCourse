@@ -1,13 +1,14 @@
-﻿using OnlineCourse.Models;
+﻿using OnlineCourse.DTOs;
+using OnlineCourse.Models;
 
 namespace OnlineCourse.Interface
 {
     public interface IUserRepository
     {
-        Task<ICollection<User>> GetAllUsers();
-        Task<User> AddUser(User user);
-        Task<User?> GetUser(int id);
-        Task<User?> UpdateUser(User user);
+        Task<ICollection<UserResponseDto>> GetAllUsers();
+        Task<UserResponseDto> AddUser(UserRequestDto userdto);
+        Task<UserResponseDto?> GetUser(int id);
+        Task<UserResponseDto?> UpdateUser(int id, UserRequestDto userdto);
         Task<bool> DeleteUser(int id);
 
     }

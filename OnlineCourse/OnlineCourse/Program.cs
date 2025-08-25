@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OnlineCourse.Data;
 using OnlineCourse.Interface;
+using OnlineCourse.Mapping;
 using OnlineCourse.Repository;
 using System.Text;
 
@@ -54,6 +55,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConnSQL")));

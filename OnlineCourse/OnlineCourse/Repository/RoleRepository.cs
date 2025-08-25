@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineCourse.Data;
+using OnlineCourse.DTOs;
 using OnlineCourse.Interface;
 using OnlineCourse.Models;
 
@@ -9,12 +11,15 @@ namespace OnlineCourse.Repository
     public class RoleRepository : IRoleRepository
     {
         private readonly AppDbContext _context;
-        public RoleRepository(AppDbContext context)
+        private readonly IMapper _mapper;
+        public RoleRepository(AppDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
-        public async Task<Role> AddRole(Role role)
+        public async Task<Role> AddRole(RoleDto roledto)
         {
+            var role = _mapper.Map<Role>(roledto);
             await _context.Roles.AddAsync(role);
             await _context.SaveChangesAsync();
             return role;
@@ -47,16 +52,16 @@ namespace OnlineCourse.Repository
             return role;
         }
 
-        public async Task<Role?> UpdateRole(Role role)
+        public async Task<Role?> UpdateRole(int id, RoleDto roledto)
         {
-            var newRole = await _context.Roles.FindAsync(role.RoleId);
-            if (newRole == null)
+            var role = await _context.Roles.FindAsync(id);
+            if (role == null)
                 return null;
 
-            newRole.RoleName = role.RoleName;
-            _context.Roles.Update(newRole);
+            _mapper.Map(roledto, role);
+            _context.Roles.Update(role);
             await _context.SaveChangesAsync();
-            return newRole;
+            return role;
         }
 
     }

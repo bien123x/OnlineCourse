@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using OnlineCourse.Data;
+using OnlineCourse.DTOs;
 using OnlineCourse.Interface;
 using OnlineCourse.Models;
 
@@ -8,16 +10,19 @@ namespace OnlineCourse.Repository
     public class UserRepository : IUserRepository
     {
         private readonly AppDbContext _context;
-        public UserRepository(AppDbContext context)
+        private readonly IMapper _mapper;
+        public UserRepository(AppDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<User> AddUser(User user)
+        public async Task<UserResponseDto> AddUser(UserRequestDto userdto)
         {
+            var user = _mapper.Map<User>(userdto);
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
-            return user;
+            return _mapper.Map<UserResponseDto>(user);
         }
 
         public async Task<bool> DeleteUser(int id)
@@ -32,38 +37,34 @@ namespace OnlineCourse.Repository
             return true;
         }
 
-        public async Task<ICollection<User>> GetAllUsers()
+        public async Task<ICollection<UserResponseDto>> GetAllUsers()
         {
-            return await _context.Users
+            var users = await _context.Users
                 .Include(u => u.Role) // Include Role navigation property
                 .ToListAsync();
+            return _mapper.Map<ICollection<UserResponseDto>>(users);
         }
 
-        public async Task<User?> GetUser(int id)
+        public async Task<UserResponseDto?> GetUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
                 throw new Exception("User not found");
             }
-            return user;
+            return _mapper.Map<UserResponseDto>(user);
         }
 
-        public async Task<User?> UpdateUser(User user)
+        public async Task<UserResponseDto?> UpdateUser(int id, UserRequestDto userdto)
         {
-            var existingUser = await _context.Users.FindAsync(user.UserId);
-            if (existingUser == null)
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
                 return null;
-            existingUser.UserName = user.UserName;
-            existingUser.Email = user.Email;
-            existingUser.FullName = user.FullName;
-            existingUser.DateOfBirth = user.DateOfBirth;
-            existingUser.RoleId = user.RoleId;
-            existingUser.IsActive = user.IsActive;
-            _context.Users.Update(existingUser);
+            _mapper.Map(userdto, user);
+            _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            return existingUser;
+            return _mapper.Map<UserResponseDto>(user);
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OnlineCourse.Data;
 using OnlineCourse.Interface;
 using OnlineCourse.Models;
 using System.IdentityModel.Tokens.Jwt;
@@ -15,9 +17,9 @@ namespace OnlineCourse.Controllers
     {
         private readonly IConfiguration _config;
 
-        private readonly IUserRepository _context;
+        private readonly AppDbContext _context;
 
-        public AuthController(IConfiguration config, IUserRepository context)
+        public AuthController(IConfiguration config, AppDbContext context)
         {
             _config = config;
             _context = context;
@@ -26,8 +28,7 @@ namespace OnlineCourse.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
-            var users = await _context.GetAllUsers();
-            var user = users.FirstOrDefault(u => u.UserName == login.Username && u.Password == login.Password);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == login.Username && u.Password == login.Password);
             if (user != null)
             {
                 // Tạo token

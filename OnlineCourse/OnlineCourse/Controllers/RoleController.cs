@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using OnlineCourse.DTOs;
 using OnlineCourse.Interface;
 using OnlineCourse.Models;
 
@@ -30,18 +31,18 @@ namespace OnlineCourse.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Role?>> AddRole([FromBody] Role role)
+        public async Task<ActionResult<Role?>> AddRole([FromBody] RoleDto roledto)
         {
-            var newRole = await _roleRepository.AddRole(role);
+            var newRole = await _roleRepository.AddRole(roledto);
             return CreatedAtAction(nameof(GetRole), new { id = newRole.RoleId }, newRole);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Role?>> UpdateRole(int id, Role role)
+        public async Task<ActionResult<Role?>> UpdateRole(int id, RoleDto roledto)
         {
-            if (id != role.RoleId)
-                return BadRequest("Role ID mismatch");
-            var updatedRole = await _roleRepository.UpdateRole(role);
+            if (ModelState.IsValid)
+                return BadRequest(ModelState);
+            var updatedRole = await _roleRepository.UpdateRole(id, roledto);
             if (updatedRole == null)
                 return NotFound();
             return Ok(updatedRole);
