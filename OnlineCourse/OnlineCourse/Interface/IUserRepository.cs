@@ -4,7 +4,11 @@ namespace OnlineCourse.Interface
 {
     public interface IUserRepository
     {
-        ICollection<User> GetAllUsers();
-        User AddUser(User user);
+        Task<ICollection<User>> GetAllUsers();
+        Task<User> AddUser(User user);
+        Task<User?> GetUser(int id);
+        Task<User?> UpdateUser(User user);
+        Task<bool> DeleteUser(int id);
+
     }
 }

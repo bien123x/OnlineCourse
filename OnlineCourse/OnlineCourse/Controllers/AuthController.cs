@@ -5,6 +5,7 @@ using OnlineCourse.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace OnlineCourse.Controllers
 {
@@ -23,9 +24,10 @@ namespace OnlineCourse.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginModel login)
+        public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
-            var user = _context.GetAllUsers().FirstOrDefault(u => u.UserName == login.Username && u.Password == login.Password);
+            var users = await _context.GetAllUsers();
+            var user = users.FirstOrDefault(u => u.UserName == login.Username && u.Password == login.Password);
             if (user != null)
             {
                 // Tạo token

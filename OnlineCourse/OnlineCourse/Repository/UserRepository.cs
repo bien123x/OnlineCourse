@@ -13,19 +13,57 @@ namespace OnlineCourse.Repository
             _context = context;
         }
 
-        public User AddUser(User user)
+        public async Task<User> AddUser(User user)
         {
-            user.Role = null; // Ensure Role is not set to null
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
             return user;
         }
 
-        public ICollection<User> GetAllUsers()
+        public async Task<bool> DeleteUser(int id)
         {
-            return _context.Users
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return false;
+            }
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<ICollection<User>> GetAllUsers()
+        {
+            return await _context.Users
                 .Include(u => u.Role) // Include Role navigation property
-                .ToList();
+                .ToListAsync();
+        }
+
+        public async Task<User?> GetUser(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+            return user;
+        }
+
+        public async Task<User?> UpdateUser(User user)
+        {
+            var existingUser = await _context.Users.FindAsync(user.UserId);
+            if (existingUser == null)
+                return null;
+            existingUser.UserName = user.UserName;
+            existingUser.Email = user.Email;
+            existingUser.FullName = user.FullName;
+            existingUser.DateOfBirth = user.DateOfBirth;
+            existingUser.RoleId = user.RoleId;
+            existingUser.IsActive = user.IsActive;
+            _context.Users.Update(existingUser);
+            await _context.SaveChangesAsync();
+
+            return existingUser;
         }
     }
 }

@@ -3,6 +3,7 @@ bin/
 obj/
 Debug/
 Release/
+/online-course-app/
 
 # VS user-specific files
 .vs/
