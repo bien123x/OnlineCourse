@@ -34,6 +34,13 @@ namespace OnlineCourse.Data
                 .IsUnique();
 
             modelBuilder.Entity<Role>()
+                .HasIndex(r => r.RoleName)
+                .IsUnique();
+            modelBuilder.Entity<Permission>()
+                .HasIndex(p => p.PermissionName)
+                .IsUnique();
+
+            modelBuilder.Entity<Role>()
                 .HasData(
                     new Role { RoleId = 1, RoleName = "Admin" },
                     new Role { RoleId = 2, RoleName = "Teacher" },

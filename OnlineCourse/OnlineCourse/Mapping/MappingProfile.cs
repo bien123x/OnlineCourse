@@ -41,6 +41,9 @@ namespace OnlineCourse.Mapping
 
             // Log
             CreateMap<Log, LogResponseDto>();
+
+            CreateMap<PermissionDto, Permission>();
+            CreateMap<Permission, PermissionDto>();
         }
     }
 }
