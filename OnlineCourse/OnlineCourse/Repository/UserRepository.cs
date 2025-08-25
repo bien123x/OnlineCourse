@@ -40,7 +40,6 @@ namespace OnlineCourse.Repository
         public async Task<ICollection<UserResponseDto>> GetAllUsers()
         {
             var users = await _context.Users
-                .Include(u => u.Role) // Include Role navigation property
                 .ToListAsync();
             return _mapper.Map<ICollection<UserResponseDto>>(users);
         }

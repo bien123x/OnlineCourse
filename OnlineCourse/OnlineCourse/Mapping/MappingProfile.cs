@@ -11,8 +11,7 @@ namespace OnlineCourse.Mapping
             // Add your mappings here
             // CreateMap<Source, Destination>();
             // User
-            CreateMap<User, UserResponseDto>()
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role));
+            CreateMap<User, UserResponseDto>();
             //CreateMap<UserRequestDto, User>()
             //    .ForMember(dest => dest.Password, opt => opt.Ignore()); // hash ở service
             CreateMap<UserRequestDto, User>();

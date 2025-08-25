@@ -17,9 +17,9 @@ namespace OnlineCourse.Repository
             _context = context;
             _mapper = mapper;
         }
-        public async Task<Role> AddRole(RoleDto roledto)
+        public async Task<Role> AddRole(string roleName)
         {
-            var role = _mapper.Map<Role>(roledto);
+            var role = new Role { RoleName = roleName };
             await _context.Roles.AddAsync(role);
             await _context.SaveChangesAsync();
             return role;
@@ -32,33 +32,39 @@ namespace OnlineCourse.Repository
             {
                 return false;
             }
+
+            if (await _context.UserRoles.AnyAsync(ur => ur.RoleId == id) ||
+            await _context.RolePermissions.AnyAsync(rp => rp.RoleId == id))
+                return false;
+
             _context.Roles.Remove(roleDelete);
             await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task<ICollection<Role>> GetAllRoles()
+        public async Task<ICollection<RoleDto>> GetAllRoles()
         {
-            return await _context.Roles.ToListAsync();
+            return await _context.Roles
+            .Select(r => new RoleDto { RoleId = r.RoleId, RoleName = r.RoleName })
+            .ToListAsync();
         }
 
-        public async Task<Role?> GetRole(int id)
+        public async Task<RoleDto?> GetRole(int id)
         {
-            var role = await _context.Roles.FindAsync(id);
-            if (role == null)
-            {
-                throw new Exception("Role not found");
-            }
-            return role;
+            return await _context.Roles
+            .Where(r => r.RoleId == id)
+            .Select(r => new RoleDto { RoleId = r.RoleId, RoleName = r.RoleName })
+            .FirstOrDefaultAsync();
         }
 
-        public async Task<Role?> UpdateRole(int id, RoleDto roledto)
+        public async Task<Role?> UpdateRole(int id, string roleName)
         {
             var role = await _context.Roles.FindAsync(id);
             if (role == null)
                 return null;
 
-            _mapper.Map(roledto, role);
+            role.RoleName = roleName;
+
             _context.Roles.Update(role);
             await _context.SaveChangesAsync();
             return role;

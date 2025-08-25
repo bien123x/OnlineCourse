@@ -22,7 +22,7 @@ namespace OnlineCourse.Controllers
         }
         // Yêu cầu xác thực để truy cập endpoint này
         [HttpGet]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Teacher")]
         public async Task<ActionResult<ICollection<UserResponseDto>>> GetUsers()
         {
             var users = await _userRepository.GetAllUsers();
@@ -40,6 +40,7 @@ namespace OnlineCourse.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<UserResponseDto?>> AddUser(UserRequestDto userdto)
         {
             var newUser = await _userRepository.AddUser(userdto);

@@ -192,6 +192,41 @@ namespace OnlineCourse.Migrations
                     b.ToTable("Payments");
                 });
 
+            modelBuilder.Entity("OnlineCourse.Models.Permission", b =>
+                {
+                    b.Property<int>("PermissionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PermissionId"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PermissionName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("PermissionId");
+
+                    b.ToTable("Permissions");
+
+                    b.HasData(
+                        new
+                        {
+                            PermissionId = 1,
+                            Description = "Allows viewing user list",
+                            PermissionName = "ViewUsers"
+                        },
+                        new
+                        {
+                            PermissionId = 2,
+                            Description = "Allows editing user information",
+                            PermissionName = "EditUsers"
+                        });
+                });
+
             modelBuilder.Entity("OnlineCourse.Models.Role", b =>
                 {
                     b.Property<int>("RoleId")
@@ -227,6 +262,49 @@ namespace OnlineCourse.Migrations
                         });
                 });
 
+            modelBuilder.Entity("OnlineCourse.Models.RolePermission", b =>
+                {
+                    b.Property<int>("RolePermissionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RolePermissionId"));
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RolePermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("RolePermissions");
+
+                    b.HasData(
+                        new
+                        {
+                            RolePermissionId = 1,
+                            PermissionId = 1,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RolePermissionId = 2,
+                            PermissionId = 2,
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            RolePermissionId = 3,
+                            PermissionId = 1,
+                            RoleId = 2
+                        });
+                });
+
             modelBuilder.Entity("OnlineCourse.Models.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -257,9 +335,6 @@ namespace OnlineCourse.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -270,12 +345,76 @@ namespace OnlineCourse.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("RoleId");
-
                     b.HasIndex("UserName")
                         .IsUnique();
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            CreatedAt = new DateTime(2025, 8, 25, 6, 38, 46, 742, DateTimeKind.Utc).AddTicks(9226),
+                            DateOfBirth = new DateTime(2004, 6, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "admin@gmail.com",
+                            FullName = "Đào Quang Biên",
+                            IsActive = true,
+                            Password = "123",
+                            UserName = "admin"
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            CreatedAt = new DateTime(2025, 8, 25, 6, 38, 46, 742, DateTimeKind.Utc).AddTicks(9228),
+                            DateOfBirth = new DateTime(2008, 6, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "user@gmail.com",
+                            FullName = "Đào Quang Triển",
+                            IsActive = true,
+                            Password = "123",
+                            UserName = "user"
+                        });
+                });
+
+            modelBuilder.Entity("OnlineCourse.Models.UserRole", b =>
+                {
+                    b.Property<int>("UserRoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserRoleId"));
+
+                    b.Property<DateTime>("AssignedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserRoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            UserRoleId = 1,
+                            AssignedAt = new DateTime(2025, 8, 25, 6, 38, 46, 742, DateTimeKind.Utc).AddTicks(9309),
+                            RoleId = 1,
+                            UserId = 1
+                        },
+                        new
+                        {
+                            UserRoleId = 2,
+                            AssignedAt = new DateTime(2025, 8, 25, 6, 38, 46, 742, DateTimeKind.Utc).AddTicks(9310),
+                            RoleId = 2,
+                            UserId = 2
+                        });
                 });
 
             modelBuilder.Entity("OnlineCourse.Models.Course", b =>
@@ -349,15 +488,42 @@ namespace OnlineCourse.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("OnlineCourse.Models.User", b =>
+            modelBuilder.Entity("OnlineCourse.Models.RolePermission", b =>
                 {
+                    b.HasOne("OnlineCourse.Models.Permission", "Permission")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("OnlineCourse.Models.Role", "Role")
-                        .WithMany("Users")
+                        .WithMany("RolePermissions")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Permission");
+
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("OnlineCourse.Models.UserRole", b =>
+                {
+                    b.HasOne("OnlineCourse.Models.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("OnlineCourse.Models.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("OnlineCourse.Models.Course", b =>
@@ -369,9 +535,16 @@ namespace OnlineCourse.Migrations
                     b.Navigation("Payments");
                 });
 
+            modelBuilder.Entity("OnlineCourse.Models.Permission", b =>
+                {
+                    b.Navigation("RolePermissions");
+                });
+
             modelBuilder.Entity("OnlineCourse.Models.Role", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("RolePermissions");
+
+                    b.Navigation("UserRoles");
                 });
 
             modelBuilder.Entity("OnlineCourse.Models.User", b =>
@@ -383,6 +556,8 @@ namespace OnlineCourse.Migrations
                     b.Navigation("Logs");
 
                     b.Navigation("Payments");
+
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

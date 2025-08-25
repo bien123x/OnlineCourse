@@ -21,10 +21,6 @@ namespace OnlineCourse.Models
 
         public DateTime? DateOfBirth { get; set; }
 
-        // FK -> Role
-        public int RoleId { get; set; }
-        public Role? Role { get; set; }
-
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public bool IsActive { get; set; } = true;
@@ -33,6 +29,7 @@ namespace OnlineCourse.Models
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public ICollection<Log> Logs { get; set; } = new List<Log>();
         public ICollection<Payment> Payments { get; set; } = new List<Payment>();
+        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
     }
 }
